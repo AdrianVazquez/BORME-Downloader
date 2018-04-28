@@ -14,3 +14,6 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/pdf/{pdf}', "PdfParserController@show");
+
