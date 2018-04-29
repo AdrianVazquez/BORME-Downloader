@@ -35,12 +35,28 @@ class PdfParserController extends Controller
      */
     public function store(Request $request)
     {
+    	//Obtenemos el valor _POST del campo pdf de nuestro formulario
     	$archivo = $request->input("pdf");
-    	try{
-	        Storage::disk('public')->put('BORME.pdf', fopen($archivo, 'r'));
-	        return redirect()->route('ver_pdf', [], 301);
-    	}catch(Exception $e){
-    		die("Error en la descarga:".$e);
+    	//Comprobamos que tenga https, y sino se la añadimos
+    	if(strpos($archivo, ':')===false){
+    		$archivo = "https://".$archivo;
+    	}
+
+    	//Comprobamos que el dominio es exclusivamente el que queremos usar para descargar
+    	if(strstr(parse_url($archivo, PHP_URL_HOST), 'www.boe.es')){ 
+	    	//Intentamos realizar la descarga
+	    	try{
+	    		//Guardamos en disco el archivo PDF
+		        Storage::disk('public')->put('BORME.pdf', fopen($archivo, 'r'));
+		        //Redirigimos al visor de pdfs
+		        return redirect()->route('ver_pdf', [], 301);
+	    	}catch(Exception $e){
+	    		//En caso de error en la descarga, mensaje de error
+	    		die("Error en la descarga:".$e);
+	    	}
+    	}else{
+    		//En caso de intentar usar otro dominio para la descarga, mensaje de error
+    		die("<h1>¡Error!</h1><br>Ojo, el dominio del que intentas descargar el BORME no es www.boe.es");
     	}
     }
 
@@ -51,12 +67,13 @@ class PdfParserController extends Controller
      */
     public function show()
     {
-        
+        //Usamos la clase PDFParse
 		$parser = new \Smalot\PdfParser\Parser();
+		//Abrimos el PDF guardado anteriormente
 		$pdf    = $parser->parseFile('./BORME.pdf');
-		 
+		//Obtenemos el texto del PDF
 		$text = $pdf->getText();
-		 
+		//Mostramos el texto por pantalla
 		dd($text);
     }
 
