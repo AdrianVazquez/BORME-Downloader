@@ -14,6 +14,6 @@
 Route::get('/', function () {
     return view('welcome');
 });
-
-Route::get('/pdf/{pdf}', "PdfParserController@show");
+Route::post('/pdf/descargar/', "PdfParserController@store");
+Route::get('/pdf/ver/',  ['as' => 'ver_pdf', 'uses' => "PdfParserController@show"]);
 

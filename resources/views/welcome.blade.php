@@ -79,15 +79,15 @@
 
             <div class="content">
                 <div class="title m-b-md">
-                    Laravel
+                    BORME Downloader
                 </div>
 
-                <div class="links">
-                    <a href="https://laravel.com/docs">Documentation</a>
-                    <a href="https://laracasts.com">Laracasts</a>
-                    <a href="https://laravel-news.com">News</a>
-                    <a href="https://forge.laravel.com">Forge</a>
-                    <a href="https://github.com/laravel/laravel">GitHub</a>
+                <div>
+                       <form action="/pdf/descargar/" method="post">
+                         {{ csrf_field() }}
+                            <input type="text" name="pdf">
+                            <input type="submit" value="Enviar">
+                       </form>
                 </div>
             </div>
         </div>

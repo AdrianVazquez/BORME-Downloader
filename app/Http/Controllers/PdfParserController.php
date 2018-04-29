@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Storage;
 
 class PdfParserController extends Controller
 {
@@ -34,20 +35,25 @@ class PdfParserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+    	$archivo = $request->input("pdf");
+    	try{
+	        Storage::disk('public')->put('BORME.pdf', fopen($archivo, 'r'));
+	        return redirect()->route('ver_pdf', [], 301);
+    	}catch(Exception $e){
+    		die("Error en la descarga:".$e);
+    	}
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show()
     {
         
 		$parser = new \Smalot\PdfParser\Parser();
-		$pdf    = $parser->parseFile('./BORME-A-2017-6-41.pdf');
+		$pdf    = $parser->parseFile('./BORME.pdf');
 		 
 		$text = $pdf->getText();
 		 
