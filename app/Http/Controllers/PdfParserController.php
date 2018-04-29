@@ -43,17 +43,23 @@ class PdfParserController extends Controller
     	}
 
     	//Comprobamos que el dominio es exclusivamente el que queremos usar para descargar
-    	if(strstr(parse_url($archivo, PHP_URL_HOST), 'www.boe.es')){ 
-	    	//Intentamos realizar la descarga
-	    	try{
-	    		//Guardamos en disco el archivo PDF
-		        Storage::disk('public')->put('BORME.pdf', fopen($archivo, 'r'));
-		        //Redirigimos al visor de pdfs
-		        return redirect()->route('ver_pdf', [], 301);
-	    	}catch(Exception $e){
-	    		//En caso de error en la descarga, mensaje de error
-	    		die("Error en la descarga:".$e);
-	    	}
+    	if(strstr(parse_url($archivo, PHP_URL_HOST), 'www.boe.es')){
+    		//Comprobamos que es un PDF 
+    		if(strstr(substr(parse_url($archivo, PHP_URL_PATH), -4),'.pdf')){
+		    	//Intentamos realizar la descarga
+		    	try{
+		    		//Guardamos en disco el archivo PDF
+			        Storage::disk('public')->put('BORME.pdf', fopen($archivo, 'r'));
+			        //Redirigimos al visor de pdfs
+			        return redirect()->route('ver_pdf', [], 301);
+		    	}catch(\Exception $e){
+		    		//En caso de error en la descarga, mensaje de error
+		    		die("Error en la descarga");
+		    	}
+		    }else{
+		    	//Si no es un PDF, mensaje de error
+    		die("<h1>¡Error!</h1><br>Revisa la url, tienes que introducir la url del PDF del BORME.");
+		    }
     	}else{
     		//En caso de intentar usar otro dominio para la descarga, mensaje de error
     		die("<h1>¡Error!</h1><br>Ojo, el dominio del que intentas descargar el BORME no es www.boe.es");
