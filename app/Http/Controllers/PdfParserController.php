@@ -36,26 +36,39 @@ class PdfParserController extends Controller
     public function store(Request $request)
     {
     	//Obtenemos el valor _POST del campo pdf de nuestro formulario
-    	$archivo = $request->input("pdf");
+    	$url_archivo = $request->input("pdf");
     	//Comprobamos que tenga https, y sino se la añadimos
-    	if(strpos($archivo, ':')===false){
-    		$archivo = "https://".$archivo;
+    	if(strpos($url_archivo, ':')===false){
+    		$url_archivo = "https://".$url_archivo;
     	}
 
     	//Comprobamos que el dominio es exclusivamente el que queremos usar para descargar
-    	if(strstr(parse_url($archivo, PHP_URL_HOST), 'www.boe.es')){
+    	if(strstr(parse_url($url_archivo, PHP_URL_HOST), 'www.boe.es')){
     		//Comprobamos que es un PDF 
-    		if(strstr(substr(parse_url($archivo, PHP_URL_PATH), -4),'.pdf')){
+    		$archivo = parse_url($url_archivo, PHP_URL_PATH);
+    		if(strstr(substr($archivo, -4),'.pdf')){
 		    	//Intentamos realizar la descarga
-		    	try{
+		    	//try{
 		    		//Guardamos en disco el archivo PDF
-			        Storage::disk('public')->put('BORME.pdf', fopen($archivo, 'r'));
+			        Storage::disk('public')->put('BORME.pdf', fopen($url_archivo, 'r'));
+
+			        //Usamos la clase PDFParse
+					$parser = new \Smalot\PdfParser\Parser();
+					//Abrimos el PDF guardado anteriormente
+					$pdf    = $parser->parseFile('./BORME.pdf');
+					//Obtenemos el texto del PDF
+					$texto = $pdf->getText();
+					//Obtenemos el nombre original del PDF y le quitamos la extensión
+					$nombre_descarga = basename($archivo, '.' . pathinfo($archivo, PATHINFO_EXTENSION));
+					//Guardamos el texto en un archivo TXT con el nombre original del PDF
+			        Storage::disk('public')->put($nombre_descarga.".txt", $texto);
+
 			        //Redirigimos al visor de pdfs
 			        return redirect()->route('ver_pdf', [], 301);
-		    	}catch(\Exception $e){
+		    	//}catch(\Exception $e){
 		    		//En caso de error en la descarga, mensaje de error
-		    		die("Error en la descarga");
-		    	}
+		    	//	die("Error en la descarga");
+		    	//}
 		    }else{
 		    	//Si no es un PDF, mensaje de error
     		die("<h1>¡Error!</h1><br>Revisa la url, tienes que introducir la url del PDF del BORME.");
