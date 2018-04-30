@@ -14,6 +14,7 @@
 Route::get('/', function () {
     return view('welcome');
 });
-Route::post('/pdf/descargar/', "PdfParserController@store");
-Route::get('/pdf/ver/',  ['as' => 'ver_pdf', 'uses' => "PdfParserController@show"]);
+Route::post('/pdf/descargar/', "BormeDownloader@downloadBorme");
+Route::get('/txt/listar/',  ['as' => 'listar_txt', 'uses' => "BormeDownloader@index"]);
+Route::get('/txt/ver/',  ['as' => 'ver_txt', 'uses' => "BormeDownloader@show"]);
 
