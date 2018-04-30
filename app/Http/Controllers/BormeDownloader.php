@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\View;
 use Illuminate\Http\Request;
 use Storage;
+use Response;
 
 class BormeDownloader extends Controller
 {
@@ -69,24 +70,32 @@ class BormeDownloader extends Controller
     {
 
 		    	//Intentamos realizar la descarga
-		    	//try{
-		    		//Guardamos en disco el archivo PDF
-			        Storage::disk('local')->put('BORME.pdf', fopen($url_archivo, 'r'));
+		    	try{
 
-			        //Usamos la clase PDFParse
+					//Obtenemos el nombre original del PDF y le quitamos la extensión
+					$nombre_archivo = basename($archivo, '.' . pathinfo($archivo, PATHINFO_EXTENSION));
+		    		//Guardamos en disco el archivo PDF
+			        Storage::disk('local')->put($nombre_archivo.'.pdf', fopen($url_archivo, 'r'));
+			    }catch(\Exception $e){
+		    		//En caso de error en la descarga, mensaje de error
+		    		die("Error en la descarga");
+		    	}
+
+		    	try{
+					//Usamos la clase PDFParse
 					$parser = new \Smalot\PdfParser\Parser();
 					//Abrimos el PDF guardado anteriormente
 					$pdf    = $parser->parseFile('../storage/app/BORME.pdf');
 					//Obtenemos el texto del PDF
 					$texto = $pdf->getText();
-					//Obtenemos el nombre original del PDF y le quitamos la extensión
-					$nombre_descarga = basename($archivo, '.' . pathinfo($archivo, PATHINFO_EXTENSION));
 					//Guardamos el texto en un archivo TXT con el nombre original del PDF
-			        Storage::disk('local')->put($nombre_descarga.".txt", $texto);
-			    //}catch(\Exception $e){
+			        Storage::disk('local')->put($nombre_archivo.".txt", $texto);
+		    	}catch(\Exception $e){
 		    		//En caso de error en la descarga, mensaje de error
-		    	//	die("Error en la descarga");
-		    	//}
+		    		die("Problema al transformar a PDF, hemos conservado el PDF original.");
+		    	}
+		    	//Si no ha habido ningún problema, borramos el pdf
+		    	Storage::disk('local')->delete($nombre_archivo.'.pdf');
     }
 
     /**
@@ -101,9 +110,9 @@ class BormeDownloader extends Controller
     	$existencia = Storage::disk('local')->exists($nombre_archivo.'.txt');
     	if($existencia){
 			//Abrimos el txt guardado anteriormente
-			$text = Storage::disk('local')->get($nombre_archivo.'.txt');
+			$texto = Storage::disk('local')->get($nombre_archivo.'.txt');
 			//Mostramos el texto por pantalla
-			dd($text);
+			dd($texto);
 		} else {
 			die("El archivo no existe en nuestros sistemas. Prueba a descargarlo antes");
 		}
@@ -116,9 +125,29 @@ class BormeDownloader extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function download(Request $request)
     {
-        //
+        //Nombre archivo
+    	$nombre_archivo = $request->input("file");
+    	$existencia = Storage::disk('local')->exists($nombre_archivo.'.txt');
+    	if($existencia){
+			//Abrimos el txt guardado anteriormente
+			$texto = Storage::disk('local')->get($nombre_archivo.'.txt');
+			//Nombre del archivo a descargar
+    		$nombre_descarga = $nombre_archivo.'.txt';
+
+		    // Creamos los headers para generar la descarga
+		    $headers = [
+		      'Content-type' => 'text/plain', 
+		      'Content-Disposition' => sprintf('attachment; filename="%s"', $nombre_descarga),
+		      'Content-Length' => strlen($texto)
+		    ];
+
+		    // Enviamos la respuesta al navegador con el contenido y los headers
+		    return Response::make($texto, 200, $headers);
+		} else {
+			die("El archivo no existe en nuestros sistemas. Prueba a descargarlo antes");
+		}
     }
 
     /**

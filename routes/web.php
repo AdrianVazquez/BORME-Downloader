@@ -17,4 +17,4 @@ Route::get('/', function () {
 Route::post('/pdf/descargar/', "BormeDownloader@downloadBorme");
 Route::get('/txt/listar/',  ['as' => 'listar_txt', 'uses' => "BormeDownloader@index"]);
 Route::get('/txt/ver/',  ['as' => 'ver_txt', 'uses' => "BormeDownloader@show"]);
-
+Route::get('/txt/descargar/',  ['as' => 'descargar_txt', 'uses' => "BormeDownloader@download"]);
