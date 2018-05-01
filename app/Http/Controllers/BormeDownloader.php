@@ -85,7 +85,7 @@ class BormeDownloader extends Controller
 					//Usamos la clase PDFParse
 					$parser = new \Smalot\PdfParser\Parser();
 					//Abrimos el PDF guardado anteriormente
-					$pdf    = $parser->parseFile('../storage/app/BORME.pdf');
+					$pdf    = $parser->parseFile('../storage/app/'.$nombre_archivo.'.pdf');
 					//Obtenemos el texto del PDF
 					$texto = $pdf->getText();
 					//Guardamos el texto en un archivo TXT con el nombre original del PDF

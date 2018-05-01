@@ -4,7 +4,7 @@
                 </div>
 
                 <div>
-                       <form action="{{ url('/') }}pdf/descargar/" method="post">
+                       <form action="{{ route('descargar_pdf') }}" method="post">
                          {{ csrf_field() }}
                             <input type="text" name="pdf" placeholder="Escribe aquí la url: https://www.boe.es/borme/dias/..." size="50">
                             <input type="submit" value="Procesar">
