@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="viewport" content="width=device-width; initial-scale=1;" />
 
         <title>BORME Downloader</title>
 
@@ -83,6 +83,18 @@
                 font-family: 'Raleway', sans-serif;
                 font-weight: 100;
                 text-decoration: none;
+            }
+
+            @media only screen and (max-width : 500px) {
+                /* Styles */
+                .content{
+                    width: 80%;
+                }
+
+                .title{
+                    font-size: 50px;
+                    text-align: center;
+                }
             }
 
         </style>
