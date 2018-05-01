@@ -67,6 +67,24 @@
             .m-b-md {
                 margin-bottom: 30px;
             }
+
+            ul {
+                list-style-type: none;
+            }
+
+            #footer-copy{
+                position: fixed;
+                bottom: 15px;
+                left: 20px;
+            }
+
+            #footer-copy a{
+                color: #636b6f;
+                font-family: 'Raleway', sans-serif;
+                font-weight: 100;
+                text-decoration: none;
+            }
+
         </style>
     </head>
      <body>
